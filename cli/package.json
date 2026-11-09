@@ -1,0 +1,12 @@
+{
+  "name": "wildjury",
+  "version": "0.1.0",
+  "description": "A jury of LLMs from different labs for your code and your questions, through one Otari key.",
+  "type": "module",
+  "bin": { "wildjury": "bin/wildjury.js" },
+  "files": ["bin", "src"],
+  "engines": { "node": ">=21" },
+  "scripts": { "test": "node --test" },
+  "keywords": ["llm", "code-review", "cli", "otari", "jury", "ai"],
+  "license": "MIT"
+}
