@@ -1,6 +1,6 @@
 "use client";
 
-// API gateway, from Illos.dev (https://illos.dev/library/isometric/api-gateway).
+// API gateway, drawn by Cankat Polat and published on Illos.dev (https://illos.dev/library/isometric/api-gateway).
 // One SVG, no runtime: it plays once when it scrolls into view, holds its final frame, loops while hovered, and finishes its cycle when the pointer leaves.
 import { useEffect, useRef, type CSSProperties } from "react";
 

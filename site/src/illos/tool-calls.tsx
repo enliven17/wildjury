@@ -1,6 +1,6 @@
 "use client";
 
-// Tool calls, from Illos.dev (https://illos.dev/library/shader/tool-calls).
+// Tool calls, drawn by Cankat Polat and published on Illos.dev (https://illos.dev/library/shader/tool-calls).
 // One SVG, its field drawn live with WebGL by shader-runtime.ts beside this file: it plays once when it scrolls into view, holds its final frame, loops while hovered, and finishes its cycle when the pointer leaves. Without WebGL, or with reduced motion, the SVG's still shows.
 import { useEffect, useRef, type CSSProperties } from "react";
 import { mountShader } from "./shader-runtime";

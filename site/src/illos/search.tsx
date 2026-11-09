@@ -1,6 +1,6 @@
 "use client";
 
-// Search index, from Illos.dev (https://illos.dev/library/hud/search).
+// Search index, drawn by Cankat Polat and published on Illos.dev (https://illos.dev/library/hud/search).
 // One SVG, no runtime: it plays once when it scrolls into view, holds its final frame, loops while hovered, and finishes its cycle when the pointer leaves.
 import { useEffect, useRef, type CSSProperties } from "react";
 

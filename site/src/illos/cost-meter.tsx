@@ -1,6 +1,6 @@
 "use client";
 
-// Cost meter, from Illos.dev (https://illos.dev/library/hud/cost-meter).
+// Cost meter, drawn by Cankat Polat and published on Illos.dev (https://illos.dev/library/hud/cost-meter).
 // One SVG, no runtime: it plays once when it scrolls into view, holds its final frame, loops while hovered, and finishes its cycle when the pointer leaves.
 import { useEffect, useRef, type CSSProperties } from "react";
 
