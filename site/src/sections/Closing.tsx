@@ -62,7 +62,7 @@ export default function Closing() {
       <footer className="footer">
         <div className="wrap footer-top">
           <div className="footer-brand">
-            <img src="/logo/wildjury-lockup.svg" alt="wildjury" height={30} />
+            <img src="/logo/wildjury-lockup-paper.svg" alt="wildjury" height={30} />
             <p>A jury of LLMs for your code and your questions. The verdict, with the dissent left in.</p>
             <Command cmd="npx github:enliven17/wildjury --help" />
           </div>
@@ -82,7 +82,7 @@ export default function Closing() {
           <span>Runs on <a href="https://otari.ai" target="_blank" rel="noreferrer">Otari</a> by Mozilla AI</span>
         </div>
         <div className="footer-giant" aria-hidden="true">
-          <img src="/logo/wildjury-wordmark.svg" alt="" />
+          <img src="/logo/wildjury-wordmark-paper.svg" alt="" />
         </div>
       </footer>
     </section>

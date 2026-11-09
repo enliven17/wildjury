@@ -56,7 +56,7 @@ export default function Docs() {
     <div className="docs">
       <header className="d-top">
         <a href="/" className="d-brand">
-          <img src="/logo/wildjury-lockup.svg" alt="wildjury" height={24} />
+          <img src="/logo/wildjury-lockup-paper.svg" alt="wildjury" height={24} />
           <span>docs</span>
         </a>
         <div className="d-top-end">

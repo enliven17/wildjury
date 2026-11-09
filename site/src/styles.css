@@ -99,7 +99,6 @@ html.scrolled .nav::before { opacity: 1; }
 .hb-fill { position: absolute; inset: 0; background: var(--grad); transform-origin: left; transform: scaleX(var(--p)); }
 .hb-line span { position: absolute; top: 10px; font: 11px var(--mono); color: #4a554d; transition: color 0.3s; }
 .hb-line span.is-on { color: var(--lime); }
-.hero-hint { position: absolute; right: var(--gutter); top: 50%; z-index: 1; writing-mode: vertical-rl; font: 11px var(--mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); opacity: calc(1 - var(--p) * 6); }
 
 /* labs marquee */
 .labs { padding: 72px 0 0; }
@@ -222,8 +221,7 @@ html.scrolled .nav::before { opacity: 1; }
   .hero-top { grid-template-columns: 1fr; gap: 20px; }
   .hero-beats { grid-template-columns: 1fr; gap: 14px; }
   .hb-copy { height: 84px; }
-  .hero-hint { display: none; }
-  .term-body { font-size: 12px; min-height: 0; }
+    .term-body { font-size: 12px; min-height: 0; }
   .big-num span { text-align: left; }
 }
 @media (max-width: 480px) {

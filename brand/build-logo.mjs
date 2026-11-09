@@ -1,4 +1,4 @@
-// npm run logo → logo/*.svg. The mark and wordmark are built from geometry and Geist's outlines, never typed.
+// npm run logo → logo/*.svg. The mark is built from isometric geometry, the wordmark from Geist Bold's outlines.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import opentype from 'opentype.js'
 
@@ -7,147 +7,104 @@ mkdirSync(new URL('./logo/', import.meta.url), { recursive: true })
 const r = (n) => Math.round(n * 100) / 100
 const pts = (a) => a.map(([x, y]) => `${r(x)},${r(y)}`).join(' ')
 
-/* ── The jury cube ───────────────────────────────────────────────────────────
-   An isometric cube. Its top is a 3×3 bench of seats; eight agree.
-   One seat sits raised in amber: the dissent, kept on the record. */
-const C = [60, 62] // centre vertex
-const S = 46 // edge length in px
-const dx = S * Math.cos(Math.PI / 6)
-const dy = S / 2
-const add = (p, q, k = 1) => [p[0] + q[0] * k, p[1] + q[1] * k]
-const U = [dx, -dy] // to the right-back
-const V = [-dx, -dy] // to the left-back
-const D = [0, S] // down
-const GAP = 0.11
-const DISSENT = [2, 1] // top face, right edge, middle seat
-const LIFT = 11
+/* ── The gavel ───────────────────────────────────────────────────────────────
+   An isometric gavel head cut into slices, like ballots stacked on a spike.
+   The front block and three slices agree; the last slice stands up in amber: the dissent. */
+const c = Math.cos(Math.PI / 6)
+const s = 0.5
+// Screen vectors (y down): X runs down-right, Y down-left, Z up.
+const project = ([x, y, z]) => [x * c - y * c, x * s + y * s - z]
 
-// A seat on a face spanned from `o` by vectors a, b; cells i, j of 3.
-const seat = (o, a, b, i, j) => {
-  const u0 = i / 3 + GAP / 2, u1 = (i + 1) / 3 - GAP / 2, v0 = j / 3 + GAP / 2, v1 = (j + 1) / 3 - GAP / 2
-  const p = (u, v) => add(add(o, a, u), b, v)
-  return [p(u0, v0), p(u1, v0), p(u1, v1), p(u0, v1)]
+const W = 2 // head width (x)
+const H = 2 // head height (z)
+const GAP = 0.13
+// [length along y, colour, lift]; listed back (up-right) to front (down-left).
+const SLICES = [
+  [0.56, '#FFB547', 0.34],
+  [0.56, '#11A8A0', 0],
+  [0.56, '#1FC29E', 0],
+  [0.56, '#3FE08A', 0],
+  [1.55, '#C8FF4D', 0],
+]
+const HANDLE = { x0: 0.7, x1: 1.3, z0: 0.22, z1: 0.82, len: 1.25 }
+
+const shade = (hex, k) => {
+  const n = parseInt(hex.slice(1), 16)
+  const ch = (v) => Math.max(0, Math.min(255, Math.round(v * k)))
+  return `#${[(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => ch(v).toString(16).padStart(2, '0')).join('')}`
 }
 
-function cube({ mono = false } = {}) {
-  const fill = (f) => (mono ? 'currentColor' : f)
-  const op = (o) => (mono ? ` fill-opacity="${o}"` : '')
-  const top = [], left = [], right = []
-  for (let i = 0; i < 3; i++)
-    for (let j = 0; j < 3; j++) {
-      // Top face: origin at the centre vertex, spanning back-right and back-left.
-      if (!(i === DISSENT[0] && j === DISSENT[1])) top.push(seat(C, U, V, i, j))
-    }
-  // The body is solid: the verdict. Only the top is a bench of seats.
-  const body = (a) => [C, add(C, a), add(add(C, a), D), add(C, D)]
-  left.push(body(V))
-  right.push(body(U))
-  const poly = (q, f, extra = '') => `<polygon points="${pts(q)}" fill="${f}"${extra}/>`
-  const d = seat(C, U, V, ...DISSENT)
-  const up = d.map(([x, y]) => [x, y - LIFT])
-  // The raised seat's two visible walls, then its top.
-  const wallR = [d[1], d[2], up[2], up[1]]
-  const wallL = [d[2], d[3], up[3], up[2]]
-  const plate = [C, add(C, U), add(add(C, U), V), add(C, V)]
-  const rim = (a) => `<polyline points="${pts([add(C, a), C])}" fill="none" stroke="${mono ? 'currentColor' : '#E6FF7A'}" stroke-width="1.2" stroke-linecap="round" opacity="${mono ? 0.5 : 0.85}"/>`
-  return `
-  ${poly(plate, mono ? 'currentColor' : 'url(#wj-plate)', op(0.14))}
-  ${top.map((q) => poly(q, fill('url(#wj-top)'))).join('')}
-  ${left.map((q) => poly(q, fill('url(#wj-left)'), op(0.62))).join('')}
-  ${right.map((q) => poly(q, fill('url(#wj-right)'), op(0.38))).join('')}
-  ${rim(U)}${rim(V)}
-  ${poly(wallR, mono ? 'currentColor' : '#C9741A', op(0.5))}${poly(wallL, mono ? 'currentColor' : '#E08A22', op(0.75))}
-  ${poly(up, mono ? 'currentColor' : 'url(#wj-amber)', op(0.2))}`
+// A box's three visible faces: right (x = x1), top (z = z1), front (y = y1).
+function box([x0, x1], [y0, y1], [z0, z1], color, mono) {
+  const P = (x, y, z) => project([x, y, z])
+  const f = (k, o) => (mono ? `fill="currentColor" fill-opacity="${o}"` : `fill="${shade(color, k)}"`)
+  return [
+    `<polygon points="${pts([P(x1, y0, z0), P(x1, y1, z0), P(x1, y1, z1), P(x1, y0, z1)])}" ${f(0.72, 0.55)}/>`,
+    `<polygon points="${pts([P(x0, y0, z1), P(x1, y0, z1), P(x1, y1, z1), P(x0, y1, z1)])}" ${f(1.12, 1)}/>`,
+    `<polygon points="${pts([P(x0, y1, z0), P(x1, y1, z0), P(x1, y1, z1), P(x0, y1, z1)])}" ${f(0.84, 0.8)}/>`,
+  ].join('')
 }
 
-const defs = `<defs>
-  <linearGradient id="wj-top" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E6FF7A"/><stop offset="1" stop-color="#9BF25A"/></linearGradient>
-  <linearGradient id="wj-left" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4BE38F"/><stop offset="1" stop-color="#1FB37E"/></linearGradient>
-  <linearGradient id="wj-right" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#17A49B"/><stop offset="1" stop-color="#0C6E6A"/></linearGradient>
-  <linearGradient id="wj-plate" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1C4A2E"/><stop offset="1" stop-color="#0E2F28"/></linearGradient>
-  <linearGradient id="wj-amber" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD27A"/><stop offset="1" stop-color="#FFA63D"/></linearGradient>
-</defs>`
+function gavel(mono = false) {
+  const parts = []
+  const corners = []
+  let y = 0
+  for (const [len, color, lift] of SLICES) {
+    parts.push(box([0, W], [y, y + len], [lift, H + lift], color, mono))
+    for (const x of [0, W]) for (const yy of [y, y + len]) for (const z of [lift, H + lift]) corners.push(project([x, yy, z]))
+    y += len + GAP
+  }
+  const front = y - GAP
+  parts.push(box([HANDLE.x0, HANDLE.x1], [front, front + HANDLE.len], [HANDLE.z0, HANDLE.z1], '#C8FF4D', mono))
+  for (const x of [HANDLE.x0, HANDLE.x1]) for (const z of [HANDLE.z0, HANDLE.z1]) corners.push(project([x, front + HANDLE.len, z]))
+  // Fit everything into a 120 box with even margins.
+  const xs = corners.map((p) => p[0])
+  const ys = corners.map((p) => p[1])
+  const [minX, maxX, minY, maxY] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)]
+  const k = 104 / Math.max(maxX - minX, maxY - minY)
+  const tx = (120 - (maxX - minX) * k) / 2 - minX * k
+  const ty = (120 - (maxY - minY) * k) / 2 - minY * k
+  return `<g transform="translate(${r(tx)} ${r(ty)}) scale(${r(k)})">${parts.join('')}</g>`
+}
 
 const markSvg = (body, extra = '') => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"${extra}>${body}</svg>`
-out('wildjury-mark.svg', markSvg(defs + cube(), ' role="img" aria-label="Wildjury"'))
-out('wildjury-mark-mono.svg', markSvg(cube({ mono: true }), ' role="img" aria-label="Wildjury"'))
-out('wildjury-mark-tile.svg', markSvg(`${defs}<rect width="120" height="120" rx="27" fill="#070908"/><g transform="translate(14 13) scale(.77)">${cube()}</g>`))
+out('wildjury-mark.svg', markSvg(gavel(), ' role="img" aria-label="Wildjury"'))
+out('wildjury-mark-mono.svg', markSvg(gavel(true), ' role="img" aria-label="Wildjury"'))
+out('wildjury-mark-tile.svg', markSvg(`<rect width="120" height="120" rx="27" fill="#070908"/><g transform="translate(16 16) scale(.733)">${gavel()}</g>`))
 
 /* ── The wordmark ────────────────────────────────────────────────────────────
-   "wildjury" in Geist Medium, tightened. The tittles on i and j become seats: lime on the i, amber on the j. */
-const font = opentype.parse(readFileSync(new URL('./source/fonts/Geist-Medium.ttf', import.meta.url)).buffer)
+   "wildjury" in Geist Bold, tracked tight, outlined so it never depends on a font. */
+const font = opentype.parse(readFileSync(new URL('./source/fonts/Geist-Bold.ttf', import.meta.url)).buffer)
 const SIZE = 100
-const TRACK = -0.045 * SIZE
-const word = 'wildjury'
-
-// Split a glyph path into closed contours, so the dot can be dropped.
-function contours(path) {
-  const all = []
-  let cur = []
-  // Each contour starts with a move; this font's outlines leave the close implicit.
-  for (const c of path.commands) {
-    if (c.type === 'M' && cur.length) {
-      all.push([...cur, { type: 'Z' }])
-      cur = []
-    }
-    if (c.type !== 'Z') cur.push(c)
-  }
-  if (cur.length) all.push([...cur, { type: 'Z' }])
-  return all
-}
-const bbox = (cmds) => {
-  const p = new opentype.Path()
-  p.commands = cmds
-  return p.getBoundingBox()
-}
-const toD = (cmds) => {
-  const p = new opentype.Path()
-  p.commands = cmds
-  return p.toPathData(2)
-}
-
+const TRACK = -0.055 * SIZE
 let x = 0
-const parts = []
-const dots = []
-for (const ch of word) {
+const d = []
+for (const ch of 'wildjury') {
   const g = font.charToGlyph(ch)
-  const cs = contours(g.getPath(x, 0, SIZE))
-  if (ch === 'i' || ch === 'j') {
-    // The tittle is the contour that sits highest.
-    const top = cs.reduce((a, b) => (bbox(b).y1 < bbox(a).y1 ? b : a))
-    const b = bbox(top)
-    dots.push({ ch, cx: (b.x1 + b.x2) / 2, cy: (b.y1 + b.y2) / 2, w: b.x2 - b.x1 })
-    cs.splice(cs.indexOf(top), 1)
-  }
-  parts.push(...cs.map(toD))
+  d.push(g.getPath(x, 0, SIZE).toPathData(2))
   x += g.advanceWidth * (SIZE / font.unitsPerEm) + TRACK
 }
 const width = x - TRACK
 const asc = (font.ascender / font.unitsPerEm) * SIZE
 const desc = (-font.descender / font.unitsPerEm) * SIZE
-const seatSq = (d, fill) => {
-  const s = d.w * 1.12
-  return `<rect x="${r(d.cx - s / 2)}" y="${r(d.cy - s / 2 - 2)}" width="${r(s)}" height="${r(s)}" rx="${r(s * 0.22)}" fill="${fill}"/>`
-}
-const vb = `0 ${r(-asc)} ${r(width)} ${r(asc + desc)}`
-const wordBody = (ink, iDot, jDot) =>
-  `<path d="${parts.join(' ')}" fill="${ink}"/>${seatSq(dots[0], iDot)}${seatSq(dots[1], jDot)}`
-const wordSvg = (ink, iDot, jDot) =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" role="img" aria-label="wildjury">${defs}${wordBody(ink, iDot, jDot)}</svg>`
+const top = asc * 0.82 // trim the empty ascender headroom
+const vb = `0 ${r(-top)} ${r(width)} ${r(top + desc)}`
+const path = (fill) => `<path d="${d.join(' ')}" fill="${fill}"/>`
+const wordSvg = (fill) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" role="img" aria-label="wildjury">${path(fill)}</svg>`
 
-out('wildjury-wordmark.svg', wordSvg('#E9F2EA', 'url(#wj-top)', 'url(#wj-amber)'))
-out('wildjury-wordmark-ink.svg', wordSvg('#070908', '#3FE08A', '#F59A2A'))
-out('wildjury-wordmark-mono.svg', wordSvg('currentColor', 'currentColor', 'currentColor'))
+out('wildjury-wordmark.svg', wordSvg('#C8FF4D'))
+out('wildjury-wordmark-paper.svg', wordSvg('#E9F2EA'))
+out('wildjury-wordmark-ink.svg', wordSvg('#070908'))
+out('wildjury-wordmark-mono.svg', wordSvg('currentColor'))
 
-// Lockup: mark at cap height ×1.9, one stem-gap of air.
-const markH = asc * 1.12
-const gap = SIZE * 0.32
-const lock = (ink) => {
-  const total = markH + gap + width
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 ${r(-asc * 1.02)} ${r(total)} ${r(asc * 1.02 + desc)}" role="img" aria-label="Wildjury">${defs}
-  <g transform="translate(0 ${r(-asc * 1.02 + (asc * 1.02 + desc - markH) / 2 - 2)}) scale(${r(markH / 120)})">${cube()}</g>
-  <g transform="translate(${r(markH + gap)} 0)">${wordBody(ink, 'url(#wj-top)', 'url(#wj-amber)')}</g></svg>`
-}
-out('wildjury-lockup.svg', lock('#E9F2EA'))
+// Lockup: the mark a touch taller than the type, one bowl of air between.
+const markH = (top + desc) * 1.02
+const gap = SIZE * 0.26
+const lock = (fill) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 ${r(-top)} ${r(markH + gap + width)} ${r(top + desc)}" role="img" aria-label="Wildjury">
+  <g transform="translate(0 ${r(-top - (markH - top - desc) / 2)}) scale(${r(markH / 120)})">${gavel()}</g>
+  <g transform="translate(${r(markH + gap)} 0)">${path(fill)}</g></svg>`
+out('wildjury-lockup.svg', lock('#C8FF4D'))
+out('wildjury-lockup-paper.svg', lock('#E9F2EA'))
 out('wildjury-lockup-ink.svg', lock('#070908'))
-console.log('logo written; wordmark', r(width), '×', r(asc + desc))
+console.log('logo written')

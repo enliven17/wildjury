@@ -51,13 +51,14 @@ export default function App() {
       <nav className="nav">
         <div className="nav-bar">
           <a href="#top" className="brand">
-            <img src="/logo/wildjury-lockup.svg" alt="wildjury" height={26} />
+            <img src="/logo/wildjury-lockup-paper.svg" alt="wildjury" height={26} />
           </a>
           <div className="nav-links">
             <a href="#how">How it works</a>
             <a href="#trial">Trial</a>
             <a href="#otari">Otari</a>
             <a href="#ci">CI</a>
+            <a href="/docs">Docs</a>
           </div>
           <div className="nav-end">
             <a className="nav-ghost" href={REPO} target="_blank" rel="noreferrer">GitHub</a>

@@ -86,7 +86,7 @@ export default function Hero() {
         .timeline({ defaults: { ease: 'expo.out' } })
         .from(split.words, { yPercent: 110, duration: 1.3, stagger: 0.06, delay: 0.15 })
         .from(q('.hero-side > *'), { y: 24, opacity: 0, duration: 1, stagger: 0.08 }, 0.45)
-        .from(q('.hero-beats, .hero-hint'), { opacity: 0, duration: 1 }, 0.9)
+        .from(q('.hero-beats'), { opacity: 0, duration: 1 }, 0.9)
     },
     { scope: root },
   )
@@ -133,7 +133,6 @@ export default function Hero() {
           ))}
         </div>
       </div>
-      <span className="hero-hint">Scroll to call the jury</span>
     </header>
   )
 }
