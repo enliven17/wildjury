@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="base.css" />
+<style>
+  /* 1200×630 link preview. */
+  body { position: relative; padding: 64px 72px; }
+  .dots { mask-image: radial-gradient(ellipse at 70% 50%, #000 20%, transparent 70%); }
+  .art { position: absolute; right: -90px; bottom: -40px; width: 760px; }
+  .fade { position: absolute; inset: 0; background: linear-gradient(90deg, var(--bg) 36%, transparent 70%); }
+  .copy { position: relative; display: flex; flex-direction: column; height: 100%; }
+  .lockup { height: 44px; }
+  h1 { margin-top: auto; font-size: 88px; line-height: 0.95; letter-spacing: -0.05em; font-weight: 500; }
+  p { margin-top: 26px; max-width: 30ch; font-size: 24px; line-height: 1.35; color: var(--muted); }
+</style>
+<div class="dots"></div>
+<img class="art screen" src="../../site/public/img/hero.png" alt="" />
+<div class="fade"></div>
+<div class="copy">
+  <img class="lockup" src="../logo/wildjury-lockup.svg" alt="wildjury" />
+  <h1>Put your code<br />on <em>trial</em></h1>
+  <p>A jury of LLMs from different labs. The verdict, with the dissent left in.</p>
+</div>

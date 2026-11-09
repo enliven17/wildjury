@@ -1,0 +1,78 @@
+<!doctype html>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="base.css" />
+<style>
+  /* 1600×1000 kit sheets: ?logo, ?colour, ?type */
+  body { padding: 72px 80px; display: flex; flex-direction: column; }
+  header { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+  header .lockup { height: 30px; }
+  header span { font: 13px 'Geist Mono'; letter-spacing: 0.14em; text-transform: uppercase; color: var(--lime); }
+  main { flex: 1; padding-top: 48px; display: none; }
+  .on { display: grid; }
+  #logo { grid-template-columns: 1.3fr 1fr 1fr; gap: 20px; }
+  .big img { max-width: 90%; }
+  .tile { border-radius: 20px; box-shadow: inset 0 0 0 1px var(--line); display: grid; place-items: center; position: relative; }
+  .tile small { position: absolute; left: 22px; bottom: 18px; font: 12px 'Geist Mono'; color: var(--muted); letter-spacing: 0.08em; }
+  .big .wordmark { font-size: 76px; }
+  .light { background: #e9f2ea; color: #070908; }
+  .light small { color: #5b665e; }
+  .tile img.m { width: 120px; }
+  .mono-mark { color: #070908; width: 120px; }
+  #logo .col { display: grid; gap: 20px; }
+  #colour { grid-template-columns: repeat(4, 1fr); grid-template-rows: 1.4fr 1fr; gap: 20px; }
+  .sw { border-radius: 20px; padding: 24px; display: flex; flex-direction: column; justify-content: flex-end; box-shadow: inset 0 0 0 1px var(--line); }
+  .sw b { font-size: 24px; font-weight: 500; letter-spacing: -0.02em; }
+  .sw span { font: 13px 'Geist Mono'; opacity: 0.7; margin-top: 6px; }
+  .sw p { font-size: 14px; opacity: 0.75; margin-top: 10px; max-width: 26ch; }
+  .wide { grid-column: span 2; }
+  #type { grid-template-columns: 1fr 1fr; gap: 64px; align-content: start; }
+  .spec small { font: 12px 'Geist Mono'; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .spec .d { font-size: 150px; line-height: 0.9; letter-spacing: -0.05em; font-weight: 500; margin: 18px 0; }
+  .spec .m { font: 64px/1 'Geist Mono'; margin: 18px 0; color: var(--lime); }
+  .spec p { color: var(--muted); font-size: 17px; line-height: 1.5; max-width: 40ch; }
+  .rules { grid-column: span 2; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .rules div { padding: 22px; border-radius: 16px; box-shadow: inset 0 0 0 1px var(--line); font-size: 16px; color: #c9d4cb; }
+  .rules b { display: block; margin-bottom: 6px; font: 12px 'Geist Mono'; color: var(--lime); letter-spacing: 0.1em; text-transform: uppercase; }
+</style>
+<header>
+  <img class="lockup" src="../logo/wildjury-lockup.svg" alt="wildjury" />
+  <span id="label"></span>
+</header>
+
+<main id="logo">
+  <div class="tile big"><img src="../logo/wildjury-lockup.svg" alt="" style="height: 96px" /><small>Lockup · on ink</small></div>
+  <div class="col">
+    <div class="tile"><img class="m" src="../logo/wildjury-mark.svg" alt="" style="width: 170px" /><small>Mark · the jury cube: eight seats agree, one stands up</small></div>
+    <div class="tile"><img class="m" src="../logo/wildjury-mark-tile.svg" alt="" style="width: 150px" /><small>App tile</small></div>
+  </div>
+  <div class="col">
+    <div class="tile light"><img src="../logo/wildjury-lockup-ink.svg" alt="" style="height: 56px" /><small>On paper</small></div>
+    <div class="tile light"><img src="../logo/wildjury-wordmark-ink.svg" alt="" style="height: 52px" /><small>Wordmark · the tittles are seats</small></div>
+  </div>
+</main>
+
+<main id="colour">
+  <div class="sw wide" style="background: var(--grad); color: #070908"><b>Verdict gradient</b><span>#D6FF5C → #3FE08A → #11A8A0</span><p>The majority. Marks, emphasis words, bars that agree.</p></div>
+  <div class="sw" style="background: #ffb547; color: #070908"><b>Dissent</b><span>#FFB547</span><p>The minority and hung juries. One per image.</p></div>
+  <div class="sw" style="background: #c8ff4d; color: #070908"><b>Lime</b><span>#C8FF4D</span><p>Buttons, labels, the prompt.</p></div>
+  <div class="sw" style="background: #070908"><b>Ink</b><span>#070908</span><p>The ground of everything.</p></div>
+  <div class="sw" style="background: #0f1312"><b>Panel</b><span>#0F1312</span><p>Terminals, cards.</p></div>
+  <div class="sw" style="background: #e9f2ea; color: #070908"><b>Paper</b><span>#E9F2EA</span><p>Text on ink.</p></div>
+  <div class="sw" style="background: #8b978e; color: #070908"><b>Muted</b><span>#8B978E</span><p>Secondary text.</p></div>
+</main>
+
+<main id="type">
+  <div class="spec"><small>Display & body · Geist</small><div class="d">Aa <em>trial</em></div><p>Medium weight, tight tracking (−0.035 to −0.05em) for headlines. One gradient word per headline, never more.</p></div>
+  <div class="spec"><small>Labels & code · Geist Mono</small><div class="m">wj-mw9p 4/5</div><p>Commands, model ids, counts, uppercase labels with wide tracking.</p></div>
+  <div class="rules">
+    <div><b>Voice</b>Plain and short. Courtroom words only where they carry meaning: juror, verdict, dissent, hung.</div>
+    <div><b>Imagery</b>Grainy glowing cubes on pure black, screened onto ink. Lime to teal; amber only for dissent.</div>
+    <div><b>Never</b>Recolour the cube, raise a second seat, retype the wordmark, or use the gradient on body text.</div>
+  </div>
+</main>
+
+<script>
+  const which = location.search.slice(1) || 'logo'
+  document.getElementById(which).classList.add('on')
+  document.getElementById('label').textContent = { logo: 'Logo', colour: 'Colour', type: 'Type & rules' }[which]
+</script>
