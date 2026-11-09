@@ -3,6 +3,8 @@
 **Put your code on trial.** Wildjury seats language models from different labs, asks each one alone, and hands you
 the verdict with the dissent left in. One [Otari](https://otari.ai) key, one command.
 
+**Site:** [wildjury.cankat.art](https://wildjury.cankat.art) · **Docs:** [wildjury.cankat.art/docs](https://wildjury.cankat.art/docs)
+
 ```
 $ wildjury review --base main
 
