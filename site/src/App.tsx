@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { gsap, reducedMotion, ScrollTrigger, scrollToHash, SplitText, startSmoothScroll, useGSAP } from './motion'
 import Hero from './sections/Hero'
 import Labs from './sections/Labs'
@@ -12,6 +12,7 @@ import { REPO } from './links'
 
 
 export default function App() {
+  const [menu, setMenu] = useState(false)
   useEffect(() => {
     startSmoothScroll()
     const onClick = (e: MouseEvent) => {
@@ -63,8 +64,22 @@ export default function App() {
           <div className="nav-end">
             <a className="nav-ghost" href={REPO} target="_blank" rel="noreferrer">GitHub</a>
             <a className="btn btn-lime btn-sm" href="#start">Get started</a>
+            <button className="nav-burger" aria-label="Menu" aria-expanded={menu} onClick={() => setMenu(!menu)}>
+              <span />
+              <span />
+            </button>
           </div>
         </div>
+        {menu && (
+          <div className="nav-panel" onClick={() => setMenu(false)}>
+            <a href="#how">How it works</a>
+            <a href="#trial">Trial</a>
+            <a href="#otari">Otari</a>
+            <a href="#ci">CI</a>
+            <a href="/docs">Docs</a>
+            <a href={REPO} target="_blank" rel="noreferrer">GitHub</a>
+          </div>
+        )}
       </nav>
       <main>
         <Hero />
