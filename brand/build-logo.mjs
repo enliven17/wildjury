@@ -45,26 +45,17 @@ function box([x0, x1], [y0, y1], [z0, z1], color, mono) {
   ].join('')
 }
 
+// Flat gavel, side on: the head is a lime block, three slices that agree and one amber slice standing up; the handle drops from its middle.
 function gavel(mono = false) {
-  const parts = []
-  const corners = []
-  let y = 0
-  for (const [len, color, lift] of SLICES) {
-    parts.push(box([0, W], [y, y + len], [lift, H + lift], color, mono))
-    for (const x of [0, W]) for (const yy of [y, y + len]) for (const z of [lift, H + lift]) corners.push(project([x, yy, z]))
-    y += len + GAP
-  }
-  const front = y - GAP
-  parts.push(box([HANDLE.x0, HANDLE.x1], [front, front + HANDLE.len], [HANDLE.z0, HANDLE.z1], '#C8FF4D', mono))
-  for (const x of [HANDLE.x0, HANDLE.x1]) for (const z of [HANDLE.z0, HANDLE.z1]) corners.push(project([x, front + HANDLE.len, z]))
-  // Fit everything into a 120 box with even margins.
-  const xs = corners.map((p) => p[0])
-  const ys = corners.map((p) => p[1])
-  const [minX, maxX, minY, maxY] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)]
-  const k = 104 / Math.max(maxX - minX, maxY - minY)
-  const tx = (120 - (maxX - minX) * k) / 2 - minX * k
-  const ty = (120 - (maxY - minY) * k) / 2 - minY * k
-  return `<g transform="translate(${r(tx)} ${r(ty)}) scale(${r(k)})">${parts.join('')}</g>`
+  const f = (hex, o = 1) => (mono ? `fill="currentColor"${o < 1 ? ` fill-opacity="${o}"` : ''}` : `fill="${hex}"`)
+  const y0 = 30, h = 34, sw = 8, g = 5, block = 44
+  const x0 = (120 - (block + 4 * (sw + g))) / 2
+  const parts = [`<rect x="${x0}" y="${y0}" width="${block}" height="${h}" rx="7" ${f('#C8FF4D')}/>`]
+  ;[['#3FE08A', 0.8], ['#1FC29E', 0.62], ['#11A8A0', 0.45]].forEach(([hex, o], i) => parts.push(`<rect x="${x0 + block + g + i * (sw + g)}" y="${y0}" width="${sw}" height="${h}" rx="3" ${f(hex, o)}/>`))
+  parts.push(`<rect x="${x0 + block + g + 3 * (sw + g)}" y="${y0 - 9}" width="${sw}" height="${h}" rx="3" ${f('#FFB547', 0.3)}/>`)
+  // The handle, centred under the head block.
+  parts.push(`<rect x="${x0 + block / 2 - 5}" y="${y0 + h + 4}" width="10" height="${96 - (y0 + h + 4)}" rx="5" ${f('#C8FF4D')}/>`)
+  return parts.join('')
 }
 
 const markSvg = (body, extra = '') => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"${extra}>${body}</svg>`
