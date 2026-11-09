@@ -143,4 +143,4 @@ cd site && npm i && npm run dev   # the website
 
 ## License
 
-[MIT](LICENSE). Illustrations in the Otari and CI sections are my own, also published on [illos.dev](https://illos.dev).
+[MIT](LICENSE). Illustrations in the Otari and CI sections are inspired by [illos.dev](https://illos.dev) and adapted for Wildjury.
