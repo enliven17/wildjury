@@ -24,6 +24,7 @@ for (const [page, out, w, h] of [
   ['profile.html', 'x-profile.png', 400, 400],
   ['banner.html', 'x-banner.png', 1500, 500],
   ['og.html', '../site/public/og.png', 1200, 630],
+  ['readme.html', 'readme-banner.png', 1600, 640],
   ['kit.html?logo', 'kit/wildjury-kit-logo.png', 1600, 1000],
   ['kit.html?colour', 'kit/wildjury-kit-colour.png', 1600, 1000],
   ['kit.html?type', 'kit/wildjury-kit-type.png', 1600, 1000],

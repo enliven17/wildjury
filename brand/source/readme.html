@@ -1,0 +1,51 @@
+<!doctype html>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="base.css" />
+<style>
+  /* 1600×640 at 2× → readme-banner.png */
+  body { position: relative; padding: 64px 72px; display: grid; grid-template-columns: 1fr 640px; gap: 56px; align-items: center; }
+  .dots { mask-image: radial-gradient(ellipse at 72% 50%, #000 15%, transparent 70%); }
+  .glow { position: absolute; right: 80px; top: 50%; width: 700px; height: 420px; transform: translateY(-50%); background: radial-gradient(ellipse, rgba(63, 224, 138, 0.14), transparent 65%); }
+  .copy { position: relative; }
+  .lockup { height: 46px; margin-bottom: 44px; }
+  h1 { font-size: 76px; line-height: 0.96; letter-spacing: -0.05em; font-weight: 500; }
+  p { margin-top: 24px; max-width: 30ch; font-size: 21px; line-height: 1.45; color: var(--muted); }
+  .pills { display: flex; gap: 10px; margin-top: 30px; }
+  .pills span { padding: 8px 14px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); font: 13px 'Geist Mono'; color: #c9d4cb; }
+  .pills span:first-child { color: #0a0c0a; background: var(--lime); box-shadow: none; }
+
+  .term { position: relative; border-radius: 18px; background: #050706; box-shadow: inset 0 0 0 1px rgba(233, 242, 234, 0.14), 0 40px 100px -40px rgba(63, 224, 138, 0.35); overflow: hidden; }
+  .bar { display: flex; gap: 8px; align-items: center; height: 40px; padding: 0 16px; border-bottom: 1px solid var(--line); }
+  .bar i { width: 11px; height: 11px; border-radius: 50%; background: #23292a; }
+  .bar b { margin: 0 auto; transform: translateX(-30px); font: 500 12px 'Geist Mono'; color: var(--muted); }
+  pre { margin: 0; padding: 20px 22px 24px; font: 14px/1.7 'Geist Mono'; color: #d7e2d9; }
+  .d { color: #5f6b63; } .l { color: var(--lime); } .g { color: var(--green); } .r { color: #ff7a6b; } .a { color: var(--amber); } .w { color: #e9f2ea; }
+  .vb { display: inline-block; width: 70px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.06); vertical-align: 2px; overflow: hidden; }
+  .vb i { display: block; height: 100%; background: var(--grad); }
+</style>
+<div class="dots"></div>
+<div class="glow"></div>
+<div class="copy">
+  <img class="lockup" src="../logo/wildjury-lockup-paper.svg" alt="wildjury" />
+  <h1>Put your code<br />on <em>trial</em></h1>
+  <p>A jury of LLMs from different labs. The verdict, with the dissent left in.</p>
+  <div class="pills"><span>wildjury review</span><span>one Otari key</span><span>MIT</span></div>
+</div>
+<div class="term">
+  <div class="bar"><i></i><i></i><i></i><b>~/api · zsh</b></div>
+<pre><span class="l">$</span> wildjury review --base main
+
+  <span class="l">WILDJURY</span> <span class="d">review · 5 jurors · trial wj-mw9p</span>
+
+  <span class="g">●</span> openai/gpt-5.1           <span class="r">request changes</span> <span class="d">0.84</span>
+  <span class="g">●</span> mistralai/mistral-large  <span class="g">approve</span>         <span class="d">0.62</span>
+  <span class="g">●</span> anthropic/claude-sonnet  <span class="r">request changes</span> <span class="d">0.91</span>
+  <span class="g">●</span> google/gemini-3-pro      <span class="r">request changes</span> <span class="d">0.77</span>
+  <span class="g">●</span> deepseek/deepseek-v4     <span class="r">request changes</span> <span class="d">0.80</span>
+
+  <span class="r">CHANGES REQUESTED</span>  <span class="d">1 approve · 4 request changes</span>
+
+  <span class="r">HIGH</span> <span class="w">Lock released before commit</span>  <span class="vb"><i style="width:60%"></i></span> <span class="d">3/5</span>
+       <span class="l">src/queue.ts:42</span>
+  <span class="a">MED </span> <span class="w">Retry never backs off on 429</span> <span class="vb"><i style="width:40%"></i></span> <span class="d">2/5</span></pre>
+</div>
