@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "description": "A jury of LLMs from different labs for your code and your questions, through one Otari key.",
   "type": "module",
-  "bin": { "wildjury": "bin/wildjury.js" },
-  "files": ["bin", "src"],
+  "bin": { "wildjury": "cli/bin/wildjury.js" },
+  "files": ["cli/bin", "cli/src"],
   "engines": { "node": ">=21" },
-  "scripts": { "test": "node --test" },
+  "scripts": { "test": "node --test cli/test/*.test.js" },
   "keywords": ["llm", "code-review", "cli", "otari", "jury", "ai"],
+  "repository": "github:enliven17/wildjury",
   "license": "MIT"
 }
