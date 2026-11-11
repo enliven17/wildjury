@@ -2,18 +2,19 @@ import { randomBytes } from 'node:crypto'
 import * as P from './prompts.js'
 
 // Labs we try to seat first, so a default jury spans different training lineages.
-const LABS = ['anthropic', 'openai', 'google', 'deepseek', 'mistralai', 'qwen', 'x-ai', 'moonshotai', 'z-ai', 'meta-llama']
-const NOT_CHAT = /embed|rerank|whisper|tts|transcri|moderation|realtime|image|audio|vision-only|guard/i
+const LABS = ['anthropic', 'openai', 'google', 'deepseek', 'mistralai', 'xai', 'x-ai', 'qwen', 'moonshotai', 'z-ai', 'meta-llama']
+const NOT_CHAT = /embed|rerank|whisper|tts|transcri|moderation|realtime|image|audio|vision|guard|voxtral|-spot$|preview|-exp/i
 const SEVERITY = { high: 3, medium: 2, low: 1 }
 
 export const vendorOf = (m) => m.owned_by || String(m.id).split(/[/:]/)[0]
-const price = (m) => Number(m.pricing?.prompt ?? m.pricing?.input ?? NaN)
+// Otari reports input_price_per_million; OpenRouter-style catalogs use prompt.
+const price = (m) => Number(m.pricing?.input_price_per_million ?? m.pricing?.prompt ?? m.pricing?.input ?? NaN)
 
-/** One mid-priced chat model per lab, preferred labs first. */
+/** One upper-tier chat model per lab, preferred labs first. */
 export function pickJury(models, n = 5) {
   const byLab = new Map()
   for (const m of models) {
-    if (m.type ? m.type !== 'chat' : NOT_CHAT.test(m.id)) continue
+    if ((m.type && m.type !== 'chat') || NOT_CHAT.test(m.id)) continue
     const lab = vendorOf(m)
     if (!byLab.has(lab)) byLab.set(lab, [])
     byLab.get(lab).push(m)
@@ -22,8 +23,8 @@ export function pickJury(models, n = 5) {
   return labs.slice(0, n).map((lab) => {
     const list = byLab.get(lab)
     const priced = list.filter((m) => price(m) > 0).sort((a, b) => price(a) - price(b))
-    // ponytail: median price as a stand-in for "the lab's everyday model"; pass --models to choose exactly.
-    return (priced.length ? priced[Math.floor((priced.length - 1) / 2)] : list[0]).id
+    // ponytail: the 75th-percentile price stands in for "the lab's strong everyday model"; pass --models to choose exactly.
+    return (priced.length ? priced[Math.floor((priced.length - 1) * 0.75)] : list[0]).id
   })
 }
 const rank = (lab) => (LABS.indexOf(lab) + 1 || 99)
@@ -80,7 +81,16 @@ async function seat(client, { model, i, n, system, user, trial, web, onDone }) {
   try {
     const body = { model, messages: [{ role: 'system', content: system }, { role: 'user', content: user }], temperature: 0.4 }
     if (web) body.tools = [{ type: 'otari_web_search', max_uses: 3 }]
-    const res = await client.chat(body, `${trial}/juror-${i}`)
+    let res
+    try {
+      res = await client.chat(body, `${trial}/juror-${i}`)
+    } catch (e) {
+      // A workspace can switch web search off; answer without it rather than recuse.
+      if (!(web && e.code === 'web_access_disabled')) throw e
+      delete body.tools
+      juror.webOff = true
+      res = await client.chat(body, `${trial}/juror-${i}`)
+    }
     const ballot = extractJson(text(res))
     Object.assign(juror, { ms: Date.now() - t0, usage: res.usage, sources: sources(res) })
     if (!ballot) Object.assign(juror, { recused: 'unreadable ballot' })
@@ -106,6 +116,8 @@ function empanel(client, { models, system, user, trial, web, onJuror }) {
 }
 
 const seated = (jurors) => jurors.filter((j) => j.ballot)
+// The first juror to return a ballot chairs, unless --judge names one.
+const chair = (voting) => voting.reduce((a, b) => (b.ms < a.ms ? b : a)).model
 
 export async function ask(client, { question, context = '', models, judge, web, onJuror, trial = newTrialId() }) {
   const user = context ? `${question}\n\nContext:\n${context}` : question
@@ -113,9 +125,9 @@ export async function ask(client, { question, context = '', models, judge, web, 
   const voting = seated(jurors)
   if (voting.length < 2) return { trial, kind: 'ask', question, jurors, error: 'Fewer than two jurors returned a ballot.' }
   const ballots = voting.map((j) => `${j.id} (${j.model}): ${j.ballot.answer}\nReasoning: ${j.ballot.reasoning}`).join('\n\n')
-  const fp = await foreperson(client, judge || voting[0].model, P.forepersonAsk, `Question: ${question}\n\n${ballots}`, trial)
+  const fp = await foreperson(client, judge || chair(voting), P.forepersonAsk, `Question: ${question}\n\n${ballots}`, trial)
   const tally = tallyAsk(fp.parsed?.positions, voting.map((j) => j.id))
-  return { trial, kind: 'ask', question, jurors, foreperson: judge || voting[0].model, ...tally }
+  return { trial, kind: 'ask', question, jurors, foreperson: judge || chair(voting), ...tally }
 }
 
 export async function review(client, { diff, models, judge, onJuror, trial = newTrialId() }) {
@@ -126,8 +138,8 @@ export async function review(client, { diff, models, judge, onJuror, trial = new
   const all = voting.flatMap((j) => (j.ballot.findings || []).map((f) => ({ ...f, juror: j.id })))
   let findings = []
   if (all.length) {
-    const fp = await foreperson(client, judge || voting[0].model, P.forepersonReview, JSON.stringify(all), trial)
+    const fp = await foreperson(client, judge || chair(voting), P.forepersonReview, JSON.stringify(all), trial)
     findings = sortFindings(fp.parsed?.findings, ids)
   }
-  return { trial, kind: 'review', jurors, foreperson: judge || voting[0].model, findings, ...tallyReview(voting.map((j) => j.ballot)) }
+  return { trial, kind: 'review', jurors, foreperson: judge || chair(voting), findings, ...tallyReview(voting.map((j) => j.ballot)) }
 }

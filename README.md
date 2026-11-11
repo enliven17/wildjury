@@ -91,7 +91,7 @@ flowchart LR
   F --> T[(tally<br/>majority or hung)]
 ```
 
-1. **Empanel.** Read the Otari catalog and seat one mid-priced chat model per lab.
+1. **Empanel.** Read the Otari catalog and seat one strong chat model per lab (upper price quartile).
 2. **Ballots.** Jurors answer in parallel, blind to each other, as JSON.
 3. **Foreperson.** One model groups ballots that agree, or merges duplicate findings and lists who raised each. It does not vote.
 4. **Tally.** Plain code, not a model. The largest group wins only with a strict majority of jurors who voted.

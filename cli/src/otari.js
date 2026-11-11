@@ -13,7 +13,7 @@ export class OtariError extends Error {
 
 function errorFrom(status, data, text, headers) {
   const raw = data?.error ?? data?.detail ?? data
-  const code = (typeof raw === 'object' && (raw?.code || raw?.type)) || `http_${status}`
+  const code = data?.code || (typeof raw === 'object' && (raw?.code || raw?.type)) || `http_${status}`
   const message =
     (typeof raw === 'string' && raw) ||
     (typeof raw === 'object' && raw?.message) ||

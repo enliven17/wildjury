@@ -164,7 +164,7 @@ wildjury models -n 7    # preview a 7-seat jury`}</Code>
           <Section id="trial" title="How a trial runs">
             <TrialFlow />
             <ol className="d-list">
-              <li><b>Empanel.</b> Read the Otari catalog; seat one mid-priced chat model per lab.</li>
+              <li><b>Empanel.</b> Read the Otari catalog; seat one strong chat model per lab (upper price quartile).</li>
               <li><b>Ballots.</b> Jurors answer in parallel, blind to each other, as JSON.</li>
               <li><b>Foreperson.</b> One model groups ballots that agree, or merges duplicate findings. It does not vote.</li>
               <li><b>Tally.</b> Plain code counts. A juror that errors or returns an unreadable ballot is recused.</li>

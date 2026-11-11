@@ -42,6 +42,8 @@ export function askVerdict(r) {
   else out.push(`  ${bold(lime('VERDICT'))}  ${bold(top.label)}  ${dim(`${top.jurors.length}/${r.jurors.filter((j) => j.ballot).length} agree · ${pct(r.agreement)}`)}`)
   if (top?.summary) out.push(dim(wrap(top.summary, 78, '           ')))
   for (const p of r.hung ? r.positions : rest) out.push(`\n  ${amber(r.hung ? 'POSITION' : 'DISSENT ')} ${p.label}  ${dim(p.jurors.join(' '))}`, dim(wrap(p.summary || '', 78, '           ')))
+  if (r.jurors.some((j) => j.webOff)) out.push(`
+  ${amber('NOTE')}     ${dim('Web search is off for this Otari workspace; jurors answered without it. Turn it on under Tools on otari.ai.')}`)
   const src = [...new Set(r.jurors.flatMap((j) => j.sources || []))]
   if (src.length) out.push(`\n  ${dim('SOURCES')}`, ...src.slice(0, 8).map((u) => dim(`  · ${u}`)))
   return out.join('\n') + footer(r)
